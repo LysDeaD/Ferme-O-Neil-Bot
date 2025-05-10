@@ -1,0 +1,169 @@
+body {
+  background-image: url(img/vache-champ2.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+nav {
+  background-color: #F5F0E6;
+  position: fixed;
+  top: 0;
+  width: 99.3%;
+  text-align: center;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);
+}
+
+nav ul {
+  list-style: none;
+  padding: 5px;
+}
+
+nav li {
+  display: inline;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+nav li:hover {
+  background-color: #E8E1D4;
+  border-radius: 20px;
+  margin: 10px;
+}
+
+nav a {
+  color: #4B6B31;
+  font-size: 20px;
+  font-family: system-ui;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 50px;
+}
+
+#sang {
+  width: 2%;
+  position: fixed;
+  right: 2%;
+  top: 1%;
+}
+
+.text, #titre, h1 {
+  color: #2C2C2C;
+  font-family: system-ui;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+}
+
+.text {
+  font-size: 25px;
+}
+
+#titre {
+  font-size: 50px;
+  padding-top: 50px;
+  text-shadow: #a5a5a5b8 2px 2px 5px;
+}
+
+h1 {
+  text-shadow: #a5a5a5b8 2px 2px 5px;
+}
+
+.text2,
+.image-grid,
+.special {
+  background-color: rgba(255, 255, 255, 0.877);
+  border-radius: 20px;
+  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);
+}
+
+.text2 {
+  width: 80%;
+  margin: auto;
+  padding: 40px;
+  line-height: 1.7;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.image-item {
+  text-align: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.image-item img,
+.special img {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+}
+
+.special img {
+  width: 40%;
+}
+
+.image-item p {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.image-item input[type="number"],
+.special input[type="number"],
+#infos [type="text"] {
+  width: 60px;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  text-align: center;
+}
+
+#infos [type="number"] {
+  width: 200px;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  text-align: center;
+}
+
+#infos [type="text"] {
+  width: 210px;
+}
+
+.special {
+  max-width: 90%;
+  width: 400px;
+  padding: 10px;
+  margin: -1050px 30px auto;
+}
+
+div p {
+  background-color: #4b6b31af;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  padding: 3px;
+  margin: 15px;
+}
+
+#fertilisant {
+  border-radius: 10px;
+}
