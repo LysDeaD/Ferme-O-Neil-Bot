@@ -245,8 +245,12 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-// Démarrer le serveur Express
-app.listen(PORT);
-
-// Connexion du bot Discord
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Serveur d'API démarré sur le port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error("Erreur de connexion du bot Discord:", err);
+  });
