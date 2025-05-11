@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     afficherMessage('Envoi de votre commande en cours...', 'info');
 
     // Envoyer la commande au serveur backend
-    fetch('http://localhost:3000/api/commandes', {
+    fetch('/api/commandes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

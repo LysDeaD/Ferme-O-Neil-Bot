@@ -25,7 +25,30 @@ const client = new Client({
 
 // Configuration du serveur Express
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: function(origin, callback) {
+    // Permettre les requêtes sans origine (comme les appels d'API directs)
+    if (!origin) return callback(null, true);
+    
+    // Liste des domaines autorisés
+    const allowedOrigins = [
+      'https://votre-app.onrender.com', // Remplacez par votre URL Render
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Non autorisé par CORS'));
+    }
+  },
+  credentials: true
+}));
+
+// Ajouter cette ligne pour gérer les requêtes OPTIONS (preflight)
+app.options('*', cors());
+
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 const PORT = process.env.PORT || 3000;
@@ -34,6 +57,35 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connecté à MongoDB'))
   .catch(err => console.error('Erreur de connexion à MongoDB:', err));
+
+// Surveiller les événements de connexion MongoDB
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connecté à MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Erreur de connexion Mongoose:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose déconnecté de MongoDB');
+});
+
+// Ajouter un middleware pour logger les requêtes entrantes
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Ajouter ce middleware de gestion d'erreurs à la fin du fichier, juste avant app.listen
+app.use((err, req, res, next) => {
+  console.error('Erreur Express:', err);
+  res.status(500).json({ 
+    success: false, 
+    message: 'Erreur serveur', 
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined 
+  });
+});
 
 // Fonctions de notification pour le bot Discord
 async function notifierClient(commande) {
