@@ -26,28 +26,26 @@ const client = new Client({
 // Configuration du serveur Express
 const app = express();
 app.use(cors({
-  origin: function(origin, callback) {
-    // Permettre les requêtes sans origine (comme les appels d'API directs)
-    if (!origin) return callback(null, true);
-    
-    // Liste des domaines autorisés
-    const allowedOrigins = [
-      'https://votre-app.onrender.com', // Remplacez par votre URL Render
-      'http://localhost:3000',
-      'http://127.0.0.1:3000'
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Non autorisé par CORS'));
-    }
-  },
-  credentials: true
+  origin: '*', // Permet toutes les origines
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Ajouter cette ligne pour gérer les requêtes OPTIONS (preflight)
 app.options('*', cors());
+
+// Middleware pour logger les requêtes et leurs origines
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  console.log(`Origine de la requête: ${req.headers.origin || 'Inconnue'}`);
+  console.log(`User-Agent: ${req.headers['user-agent']}`);
+  next();
+});
+
+// Ajoutez également une route de test CORS
+app.get('/api/test-cors', (req, res) => {
+  res.json({ message: 'Test CORS réussi!' });
+});
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
