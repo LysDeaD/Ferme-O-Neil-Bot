@@ -154,6 +154,11 @@ function creerEmbedCommande(commande, status) {
     .setTimestamp()
     .setFooter({ text: 'Ferme O\'Neil - Merci pour votre commande!' });
 
+  // Ajouter l'information sur l'employé en charge si disponible
+  if (commande.traitePar) {
+    embed.addFields({ name: 'Employé en charge', value: commande.traitePar, inline: true });
+  }
+
   // Ajouter la liste des produits
   let produitsText = '';
   commande.produits.forEach(produit => {
