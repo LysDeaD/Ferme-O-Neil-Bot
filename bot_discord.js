@@ -248,7 +248,7 @@ client.on('interactionCreate', async interaction => {
     await commande.updateStatus(nouveauStatus, interaction.user.tag);
 
     // Notifier le client
-    await notifierClient(commande);
+    // await notifierClient(commande);
 
     // Mettre à jour l'embed dans le canal des fermiers
     const { embed, row } = creerEmbedFermiers(commande);
