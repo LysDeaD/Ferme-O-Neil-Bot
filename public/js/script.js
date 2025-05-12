@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Récupérer les produits sélectionnés
     const produits = [];
-    const produitsIds = ["salade", "tomate", "oignon", "carotte", "fraise", "lait", "courge", "ble", "banane", "agave", "pdt", "oeuf", "fertilisant","poivron"];
+    const produitsIds = ["salade", "tomate", "oignon", "carotte", "fraise", "lait", "courge", "ble", "banane", "agave", "pdt", "oeuf", "fertilisant","poivron","champignon"];
     let totalCommande = 0;
 
     produitsIds.forEach(id => {
