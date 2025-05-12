@@ -11,7 +11,7 @@
 
 <script>
   function calculerTotal() {
-    const produits = ["salade", "tomate", "oignon", "carotte", "fraise", "lait", "courge", "ble", "banane", "agave", "pdt", "oeuf", "fertilisant"];
+    const produits = ["salade", "tomate", "oignon", "carotte", "fraise", "lait", "courge", "ble", "banane", "agave", "pdt", "oeuf", "fertilisant","poivron"];
     let total = 0;
 
     produits.forEach(produit => {
@@ -116,6 +116,12 @@
             <p>Oeuf</p>
             <img src="CSS/img/oeuf.jpg" alt="Oeuf">
             <input type="number" id="oeuf" min="0" value="0" data-prix="7" oninput="calculerTotal()">
+          </div>
+
+          <div class="image-item">
+            <p>Oeuf</p>
+            <img src="CSS/img/oeuf.jpg" alt="poivron">
+            <input type="number" id="poivron" min="0" value="0" data-prix="7" oninput="calculerTotal()">
           </div>
 
         </div>
