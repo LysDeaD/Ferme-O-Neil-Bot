@@ -373,12 +373,22 @@ async function initSlashCommands() {
     const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
     
     console.log('Début du rafraîchissement des commandes (/)');
-    await rest.put(
-      Routes.applicationCommands(process.env.CLIENT_ID),
-      { body: commands },
-    );
     
-    console.log('Commandes (/) rafraîchies avec succès');
+    if (process.env.GUILD_ID) {
+      // Enregistrement des commandes pour un serveur spécifique (plus rapide pour le développement)
+      await rest.put(
+        Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+        { body: commands },
+      );
+      console.log(`Commandes (/) rafraîchies avec succès pour le serveur ${process.env.GUILD_ID}`);
+    } else {
+      // Enregistrement global des commandes (peut prendre jusqu'à une heure pour se propager)
+      await rest.put(
+        Routes.applicationCommands(process.env.CLIENT_ID),
+        { body: commands },
+      );
+      console.log('Commandes (/) rafraîchies globalement avec succès (peut prendre jusqu\'à une heure pour se propager)');
+    }
   } catch (error) {
     console.error('Erreur lors de l\'initialisation des commandes slash:', error);
   }
