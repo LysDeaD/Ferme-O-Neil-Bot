@@ -1,5 +1,5 @@
 // bot_discord.js - Bot Discord pour O'Neil Farm
-const { Client, GatewayIntentBits, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, Routes } = require('discord.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -297,6 +297,408 @@ client.on('interactionCreate', async interaction => {
       console.error('Erreur lors de la récupération des statistiques:', error);
       await interaction.reply({ content: 'Une erreur est survenue lors de la récupération des statistiques.', ephemeral: true });
     }
+  }
+});
+
+// Configuration des commandes slash
+async function initSlashCommands() {
+  try {
+    const commands = [
+      // Commande /help
+      new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('Affiche la liste des commandes disponibles'),
+      
+      // Commande existante /commandes améliorée
+      new SlashCommandBuilder()
+        .setName('commandes')
+        .setDescription('Affiche les statistiques des commandes')
+        .addStringOption(option =>
+          option.setName('statut')
+            .setDescription('Filtre par statut (optionnel)')
+            .setRequired(false)
+            .addChoices(
+              { name: 'En attente', value: 'En attente' },
+              { name: 'Acceptées', value: 'Acceptée' },
+              { name: 'En préparation', value: 'En préparation' },
+              { name: 'Terminées', value: 'Terminée' },
+              { name: 'En livraison', value: 'En attente de livraison' },
+              { name: 'Livrées', value: 'Livrée' },
+              { name: 'Toutes', value: 'toutes' }
+            )),
+      
+      // Commande pour rechercher une commande spécifique
+      new SlashCommandBuilder()
+        .setName('recherche')
+        .setDescription('Recherche une commande par son ID ou le nom du client')
+        .addStringOption(option =>
+          option.setName('terme')
+            .setDescription('ID de commande ou nom de client')
+            .setRequired(true)),
+      
+      // Commande pour les stats journalières
+      new SlashCommandBuilder()
+        .setName('stats')
+        .setDescription('Affiche les statistiques des commandes')
+        .addStringOption(option =>
+          option.setName('période')
+            .setDescription('Période de temps pour les statistiques')
+            .setRequired(false)
+            .addChoices(
+              { name: 'Aujourd\'hui', value: 'jour' },
+              { name: 'Cette semaine', value: 'semaine' },
+              { name: 'Ce mois', value: 'mois' },
+              { name: 'Total', value: 'total' }
+            )),
+      
+      // Commande pour le top des clients
+      new SlashCommandBuilder()
+        .setName('topclients')
+        .setDescription('Affiche les meilleurs clients')
+        .addIntegerOption(option =>
+          option.setName('nombre')
+            .setDescription('Nombre de clients à afficher')
+            .setRequired(false)),
+      
+      // Commande pour les produits populaires
+      new SlashCommandBuilder()
+        .setName('topproduits')
+        .setDescription('Affiche les produits les plus vendus')
+        .addIntegerOption(option =>
+          option.setName('nombre')
+            .setDescription('Nombre de produits à afficher')
+            .setRequired(false))
+    ];
+
+    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+    
+    console.log('Début du rafraîchissement des commandes (/)');
+    await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: commands },
+    );
+    
+    console.log('Commandes (/) rafraîchies avec succès');
+  } catch (error) {
+    console.error('Erreur lors de l\'initialisation des commandes slash:', error);
+  }
+}
+
+// Client ready event
+client.once('ready', () => {
+  console.log(`Bot connecté en tant que ${client.user.tag}`);
+  initSlashCommands();
+  console.log(`Serveur d'API démarré sur le port ${PORT}`);
+});
+
+// Gestionnaire de commandes slash
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+
+  const { commandName } = interaction;
+
+  try {
+    // Commande /help
+    if (commandName === 'help') {
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle('Aide - Commandes du Bot O\'Neil Farm')
+        .setDescription('Voici la liste des commandes disponibles:')
+        .addFields(
+          { name: '/help', value: 'Affiche cette liste de commandes' },
+          { name: '/commandes [statut]', value: 'Affiche les statistiques des commandes avec filtre optionnel par statut' },
+          { name: '/recherche <terme>', value: 'Recherche une commande par ID ou nom de client' },
+          { name: '/stats [période]', value: 'Affiche les statistiques des commandes (jour/semaine/mois/total)' },
+          { name: '/topclients [nombre]', value: 'Liste les meilleurs clients par montant total d\'achats' },
+          { name: '/topproduits [nombre]', value: 'Liste les produits les plus vendus' }
+        )
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+
+    // Commande /commandes améliorée
+    else if (commandName === 'commandes') {
+      const statut = interaction.options.getString('statut');
+      let commandesData;
+      let titre;
+      
+      if (statut && statut !== 'toutes') {
+        commandesData = await Commande.getCommandesParStatut(statut);
+        titre = `Commandes - ${statut}`;
+      } else {
+        titre = 'Statistiques des commandes';
+        // Récupérer les statistiques pour tous les statuts
+        const enAttente = await Commande.getCommandesParStatut('En attente');
+        const acceptees = await Commande.getCommandesParStatut('Acceptée');
+        const enPreparation = await Commande.getCommandesParStatut('En préparation');
+        const terminees = await Commande.getCommandesParStatut('Terminée');
+        const enLivraison = await Commande.getCommandesParStatut('En attente de livraison');
+        const livrees = await Commande.getCommandesParStatut('Livrée');
+        
+        const embed = new EmbedBuilder()
+          .setColor('#4B6B31')
+          .setTitle(titre)
+          .setDescription('État actuel des commandes de la Ferme O\'Neil')
+          .addFields(
+            { name: 'En attente', value: enAttente.length.toString(), inline: true },
+            { name: 'Acceptées', value: acceptees.length.toString(), inline: true },
+            { name: 'En préparation', value: enPreparation.length.toString(), inline: true },
+            { name: 'Terminées', value: terminees.length.toString(), inline: true },
+            { name: 'En livraison', value: enLivraison.length.toString(), inline: true },
+            { name: 'Livrées', value: livrees.length.toString(), inline: true },
+            { name: 'Total', value: (enAttente.length + acceptees.length + enPreparation.length + terminees.length + enLivraison.length + livrees.length).toString(), inline: false }
+          )
+          .setTimestamp()
+          .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+        
+        await interaction.reply({ embeds: [embed] });
+        return;
+      }
+      
+      // Afficher la liste des commandes filtrées
+      if (commandesData.length === 0) {
+        await interaction.reply(`Aucune commande avec le statut "${statut}" trouvée.`);
+        return;
+      }
+      
+      // Si trop de commandes, limiter l'affichage
+      const commandesAffichees = commandesData.slice(0, 10);
+      
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle(titre)
+        .setDescription(`${commandesData.length} commande(s) trouvée(s)${commandesData.length > 10 ? ' (10 premières affichées)' : ''}`)
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      // Ajouter les commandes trouvées
+      commandesAffichees.forEach((cmd, index) => {
+        embed.addFields({
+          name: `#${cmd._id.toString().slice(-6)} - ${cmd.nom}`,
+          value: `Status: ${cmd.status} | Date: ${new Date(cmd.dateCommande).toLocaleString('fr-FR')} | Total: ${cmd.total.toFixed(2)}$`
+        });
+      });
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+
+    // Commande /recherche
+    else if (commandName === 'recherche') {
+      const terme = interaction.options.getString('terme');
+      let commandes;
+      
+      // Si le terme ressemble à un ID (6 derniers caractères)
+      if (/^\d{6}$/.test(terme)) {
+        // Recherche par les 6 derniers caractères de l'ID
+        const tousCommandes = await Commande.find();
+        commandes = tousCommandes.filter(cmd => cmd._id.toString().slice(-6) === terme);
+      } else {
+        // Recherche par nom (insensible à la casse)
+        commandes = await Commande.find({
+          nom: { $regex: terme, $options: 'i' }
+        }).sort({ dateCommande: -1 }).limit(10);
+      }
+      
+      if (commandes.length === 0) {
+        await interaction.reply(`Aucune commande trouvée pour "${terme}".`);
+        return;
+      }
+      
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle('Résultats de recherche')
+        .setDescription(`${commandes.length} commande(s) trouvée(s) pour "${terme}"`)
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      commandes.forEach(cmd => {
+        embed.addFields({
+          name: `#${cmd._id.toString().slice(-6)} - ${cmd.nom}`,
+          value: `Status: ${cmd.status} | Date: ${new Date(cmd.dateCommande).toLocaleString('fr-FR')} | Total: ${cmd.total.toFixed(2)}$`
+        });
+      });
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+
+    // Commande /stats
+    else if (commandName === 'stats') {
+      const periode = interaction.options.getString('période') || 'jour';
+      let dateDebut = new Date();
+      let titre = '';
+      
+      // Déterminer la période
+      switch (periode) {
+        case 'jour':
+          dateDebut.setHours(0, 0, 0, 0);
+          titre = 'Statistiques du jour';
+          break;
+        case 'semaine':
+          dateDebut.setDate(dateDebut.getDate() - dateDebut.getDay());
+          dateDebut.setHours(0, 0, 0, 0);
+          titre = 'Statistiques de la semaine';
+          break;
+        case 'mois':
+          dateDebut.setDate(1);
+          dateDebut.setHours(0, 0, 0, 0);
+          titre = 'Statistiques du mois';
+          break;
+        case 'total':
+          dateDebut = new Date(0); // 1970
+          titre = 'Statistiques totales';
+          break;
+      }
+      
+      // Récupérer les commandes de la période
+      const dateFin = new Date();
+      dateFin.setHours(23, 59, 59, 999);
+      
+      const commandes = await Commande.find({
+        dateCommande: {
+          $gte: dateDebut,
+          $lte: dateFin
+        }
+      });
+      
+      // Calculer les statistiques
+      const totalCommandes = commandes.length;
+      const totalVentes = commandes.reduce((sum, cmd) => sum + cmd.total, 0);
+      const commandesParStatut = {};
+      
+      // Compter les commandes par statut
+      commandes.forEach(cmd => {
+        if (!commandesParStatut[cmd.status]) {
+          commandesParStatut[cmd.status] = 0;
+        }
+        commandesParStatut[cmd.status]++;
+      });
+      
+      // Créer l'embed
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle(titre)
+        .setDescription(`Statistiques des commandes de la Ferme O'Neil`)
+        .addFields(
+          { name: 'Nombre de commandes', value: totalCommandes.toString(), inline: true },
+          { name: 'Montant total', value: `${totalVentes.toFixed(2)}$`, inline: true }
+        )
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      // Ajouter les statuts
+      for (const [statut, nombre] of Object.entries(commandesParStatut)) {
+        embed.addFields({ name: statut, value: nombre.toString(), inline: true });
+      }
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+
+    // Commande /topclients
+    else if (commandName === 'topclients') {
+      const nombre = interaction.options.getInteger('nombre') || 5;
+      
+      // Agréger les commandes par client
+      const commandes = await Commande.find();
+      const clientsMap = new Map();
+      
+      commandes.forEach(cmd => {
+        const key = `${cmd.discordId}:${cmd.nom}`;
+        if (!clientsMap.has(key)) {
+          clientsMap.set(key, { nom: cmd.nom, total: 0, commandes: 0 });
+        }
+        
+        const client = clientsMap.get(key);
+        client.total += cmd.total;
+        client.commandes++;
+      });
+      
+      // Trier les clients par total d'achats
+      const clientsTriés = Array.from(clientsMap.values())
+        .sort((a, b) => b.total - a.total)
+        .slice(0, nombre);
+      
+      if (clientsTriés.length === 0) {
+        await interaction.reply('Aucun client trouvé.');
+        return;
+      }
+      
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle('Top Clients')
+        .setDescription(`Les ${nombre} meilleurs clients de la Ferme O'Neil`)
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      clientsTriés.forEach((client, index) => {
+        embed.addFields({
+          name: `#${index + 1} - ${client.nom}`,
+          value: `Total: ${client.total.toFixed(2)}$ | Commandes: ${client.commandes}`
+        });
+      });
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+
+    // Commande /topproduits
+    else if (commandName === 'topproduits') {
+      const nombre = interaction.options.getInteger('nombre') || 5;
+      
+      // Agréger les produits de toutes les commandes
+      const commandes = await Commande.find();
+      const produitsMap = new Map();
+      
+      commandes.forEach(cmd => {
+        cmd.produits.forEach(produit => {
+          if (produit.quantite <= 0) return;
+          
+          if (!produitsMap.has(produit.id)) {
+            produitsMap.set(produit.id, { 
+              nom: produit.nom, 
+              quantite: 0, 
+              total: 0 
+            });
+          }
+          
+          const produitStats = produitsMap.get(produit.id);
+          produitStats.quantite += produit.quantite;
+          produitStats.total += produit.quantite * produit.prix;
+        });
+      });
+      
+      // Trier les produits par quantité vendue
+      const produitsTriés = Array.from(produitsMap.values())
+        .sort((a, b) => b.quantite - a.quantite)
+        .slice(0, nombre);
+      
+      if (produitsTriés.length === 0) {
+        await interaction.reply('Aucun produit vendu trouvé.');
+        return;
+      }
+      
+      const embed = new EmbedBuilder()
+        .setColor('#4B6B31')
+        .setTitle('Top Produits')
+        .setDescription(`Les ${nombre} produits les plus vendus de la Ferme O'Neil`)
+        .setTimestamp()
+        .setFooter({ text: 'Ferme O\'Neil - Système de commandes' });
+      
+      produitsTriés.forEach((produit, index) => {
+        embed.addFields({
+          name: `#${index + 1} - ${produit.nom}`,
+          value: `Quantité: ${produit.quantite} | Total: ${produit.total.toFixed(2)}$`
+        });
+      });
+      
+      await interaction.reply({ embeds: [embed] });
+    }
+  } catch (error) {
+    console.error(`Erreur lors de l'exécution de la commande ${commandName}:`, error);
+    await interaction.reply({ 
+      content: 'Une erreur est survenue lors du traitement de votre commande.', 
+      ephemeral: true 
+    });
   }
 });
 
