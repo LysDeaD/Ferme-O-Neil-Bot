@@ -130,10 +130,16 @@ async function envoyerMessagePrive(userId, embed) {
   try {
     const user = await client.users.fetch(userId);
     await user.send({ embeds: [embed] });
-    return true;
+    return { success: true, message: "Message envoyé avec succès" };
   } catch (error) {
     console.error(`Erreur lors de l'envoi du message privé: ${error}`);
-    return false;
+    // Vérifier si l'erreur est liée au fait que l'utilisateur ne partage pas de serveur avec le bot
+    if (error.code === 10013) { // Cannot find the user
+      return { success: false, message: "Utilisateur introuvable", code: error.code };
+    } else if (error.code === 50007) { // Cannot send messages to this user
+      return { success: false, message: "Impossible d'envoyer un message à cet utilisateur (il n'a peut-être aucun serveur en commun avec le bot)", code: error.code };
+    }
+    return { success: false, message: "Erreur lors de l'envoi du message", error: error.message };
   }
 }
 
