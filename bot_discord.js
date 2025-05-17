@@ -6,6 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const path = require('path');
+const { deployCommands } = require('./deploy-commands');
 
 // Chargement des variables d'environnement
 dotenv.config();
@@ -300,104 +301,10 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-// Configuration des commandes slash
-async function initSlashCommands() {
-  try {
-    const commands = [
-      // Commande /help
-      new SlashCommandBuilder()
-        .setName('help')
-        .setDescription('Affiche la liste des commandes disponibles'),
-      
-      // Commande existante /commandes améliorée
-      new SlashCommandBuilder()
-        .setName('commandes')
-        .setDescription('Affiche les statistiques des commandes')
-        .addStringOption(option =>
-          option.setName('statut')
-            .setDescription('Filtre par statut (optionnel)')
-            .setRequired(false)
-            .addChoices(
-              { name: 'En attente', value: 'En attente' },
-              { name: 'Acceptées', value: 'Acceptée' },
-              { name: 'En préparation', value: 'En préparation' },
-              { name: 'Terminées', value: 'Terminée' },
-              { name: 'En livraison', value: 'En attente de livraison' },
-              { name: 'Livrées', value: 'Livrée' },
-              { name: 'Toutes', value: 'toutes' }
-            )),
-      
-      // Commande pour rechercher une commande spécifique
-      new SlashCommandBuilder()
-        .setName('recherche')
-        .setDescription('Recherche une commande par son ID ou le nom du client')
-        .addStringOption(option =>
-          option.setName('terme')
-            .setDescription('ID de commande ou nom de client')
-            .setRequired(true)),
-      
-      // Commande pour les stats journalières
-      new SlashCommandBuilder()
-        .setName('stats')
-        .setDescription('Affiche les statistiques des commandes')
-        .addStringOption(option =>
-          option.setName('période')
-            .setDescription('Période de temps pour les statistiques')
-            .setRequired(false)
-            .addChoices(
-              { name: 'Aujourd\'hui', value: 'jour' },
-              { name: 'Cette semaine', value: 'semaine' },
-              { name: 'Ce mois', value: 'mois' },
-              { name: 'Total', value: 'total' }
-            )),
-      
-      // Commande pour le top des clients
-      new SlashCommandBuilder()
-        .setName('topclients')
-        .setDescription('Affiche les meilleurs clients')
-        .addIntegerOption(option =>
-          option.setName('nombre')
-            .setDescription('Nombre de clients à afficher')
-            .setRequired(false)),
-      
-      // Commande pour les produits populaires
-      new SlashCommandBuilder()
-        .setName('topproduits')
-        .setDescription('Affiche les produits les plus vendus')
-        .addIntegerOption(option =>
-          option.setName('nombre')
-            .setDescription('Nombre de produits à afficher')
-            .setRequired(false))
-    ];
-
-    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
-    
-    console.log('Début du rafraîchissement des commandes (/)');
-    
-    if (process.env.GUILD_ID) {
-      // Enregistrement des commandes pour un serveur spécifique (plus rapide pour le développement)
-      await rest.put(
-        Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-        { body: commands },
-      );
-      console.log(`Commandes (/) rafraîchies avec succès pour le serveur ${process.env.GUILD_ID}`);
-    } else {
-      // Enregistrement global des commandes (peut prendre jusqu'à une heure pour se propager)
-      await rest.put(
-        Routes.applicationCommands(process.env.CLIENT_ID),
-        { body: commands },
-      );
-      console.log('Commandes (/) rafraîchies globalement avec succès (peut prendre jusqu\'à une heure pour se propager)');
-    }
-  } catch (error) {
-    console.error('Erreur lors de l\'initialisation des commandes slash:', error);
-  }
-}
-
 // Client ready event
 client.once('ready', () => {
   console.log(`Bot connecté en tant que ${client.user.tag}`);
-  initSlashCommands();
+  deployCommands(); // Déployer les commandes slash
   console.log(`Serveur d'API démarré sur le port ${PORT}`);
 });
 

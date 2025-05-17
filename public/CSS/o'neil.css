@@ -1,0 +1,32 @@
+body {
+    background-color: rgba(0, 0, 0, 0.837);
+}
+
+.en-tête {
+    background-color: rgb(33, 33, 33);
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.en-tête p {
+    font-size: 20px;
+    font-style: italic;
+}
+
+h1 {
+    font-size: 72px;
+    color: rgb(8, 114, 11);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    margin-top: 30px;
+    background-color: rgb(0, 0, 0);
+    padding: 20px;
+    color: rgb(8, 114, 11);
+}
+
+.container p{
+    color: rgb(255, 255, 255);
+}
