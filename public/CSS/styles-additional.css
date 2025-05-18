@@ -54,10 +54,16 @@
   color: black;
 }
 
+#formulaire-commande p{
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 5px;
+}
+
 #formulaire-commande a{
   text-decoration: none;
   color: rgb(187, 95, 2);
 }
+
 /* Amélioration de l'affichage du total */
 #total-container {
   font-size: 18px;
