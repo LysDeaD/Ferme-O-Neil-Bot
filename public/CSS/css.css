@@ -49,6 +49,13 @@ nav a {
   top: 1%;
 }
 
+#discord-logo {
+  width: 2%;
+  position: fixed;
+  left: 2%;
+  top: 1.8%;
+}
+
 .text, #titre, h1 {
   color: #2C2C2C;
   font-family: system-ui;
