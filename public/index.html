@@ -1,172 +1,55 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="CSS/css.css">
-    <link rel="stylesheet" type="text/css" href="CSS/styles-additional.css">
-    <meta charset="UTF-8">
-    <title>O'Neil Farm - Accueil</title>
-    <link rel="icon" href="CSS/img/ico-site.ico" type="image/x-icon">
-    <script src="js/script.js"></script>
-  </head>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9045061450653870"
-     crossorigin="anonymous"></script>
-<script>
-  function calculerTotal() {
-    const produits = ["salade", "tomate", "oignon", "carotte", "fraise", "lait", "courge", "ble", "banane", "agave", "pdt", "oeuf", "fertilisant","poivron","champignon"];
-    let total = 0;
-
-    produits.forEach(produit => {
-      const input = document.getElementById(produit);
-      const quantite = parseInt(input.value) || 0;
-      const prix = parseFloat(input.dataset.prix) || 0;
-      total += quantite * prix;
-    });
-
-    // Affichage du total avec deux décimales
-    document.getElementById("total").textContent = total.toFixed(2) + " $";
-  }
-</script>
-
-
-  <body>
-    <nav>
-      <ul>
-        <li><a href="#">Accueil</a></li>
-        <li><a href="#commandes">Commandes</a></li>
-        <li><a href="https://discord.com/channels/1279362833951494175/1284632048933404723" target="_blank">Contact</a></li>
-        <li><a href="https://discord.com/channels/1279362833951494175/1284632048933404723" target="_blank">Recrutement</a></li>
-      </ul>
-    </nav>
-    <a href="o'neil.html">
-      <img id="sang" src="CSS/img/sang.png" alt="O'Neil Recrutement">
-    </a>
-    <a href="https://discord.gg/sYFTY3sSnt" target="_blank">
-      <img id="discord-logo" src="CSS/img/discord.png" alt="Discord">
-    </a>
-    <main class="text">
-
-      <p id="titre">La Ferme O'Neil vous souhaite la bienvenue !</p>
-      <p class="text2">La Ferme O'Neil est un pilier de la communauté agricole de Blaine County, enracinée dans une histoire de travail acharné et de tradition familiale. Nous, les O'Neil, sommes connus pour notre dur labeur, notre indépendance et notre respect des terres que nous cultivons. Depuis des générations, notre ferme est au cœur de l'économie locale, fournissant des produits frais et de qualité à la région de Los Santos et au-delà.<br>Nous vous proposons une large gamme de fruits, légumes et autres produits frais, tous récoltés avec soin et passion. Que ce soit pour un petit marché local ou pour des commandes en gros, notre ferme est prête à répondre à vos besoins. En parcourant notre site, vous pourrez passer vos commandes facilement et rapidement grâce à notre système moderne, connecté directement à notre réseau.<br><br><u>Disclaimer :</u><br>Merci de prioriser les commandes via téléphone, passer par le site seuleument si nous ne sommes pas disponibles.</p>
-
-      <div><h1>Produits disponibles</h1>
-        <div class="image-grid">
-
-          <div class="image-item">
-            <p>Salade</p>
-            <img src="CSS/img/laitue.jpg" alt="Salade">
-            <input type="number" id="salade" min="0" value="0" data-prix="5" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Tomate</p>
-            <img src="CSS/img/tomate.jpg" alt="Tomate">
-            <input type="number" id="tomate" min="0" value="0" data-prix="5" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Oignon</p>
-            <img src="CSS/img/oignon.jpg" alt="Oignon">
-            <input type="number" id="oignon" min="0" value="0" data-prix="5" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Carotte</p>
-            <img src="CSS/img/carotte.jpg" alt="Carotte">
-            <input type="number" id="carotte" min="0" value="0" data-prix="5" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Fraise</p>
-            <img src="CSS/img/fraise.jpg" alt="Fraise">
-            <input type="number" id="fraise" min="0" value="0" data-prix="8" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item" id="commandes">
-            <p>Lait</p>
-            <img src="CSS/img/lait.jpg" alt="Lait">
-            <input type="number" id="lait" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Courge</p>
-            <img src="CSS/img/courge.jpg" alt="Courge">
-            <input type="number" id="courge" min="0" value="0" data-prix="8" oninput="calculerTotal()">
-          </div>
-          <div class="image-item">
-            <p>Blé</p>
-            <img src="CSS/img/ble.jpg" alt="Blé">
-            <input type="number" id="ble" min="0" value="0" data-prix="6" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Banane</p>
-            <img src="CSS/img/banane.jpg" alt="Banane">
-            <input type="number" id="banane" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Agave</p>
-            <img src="CSS/img/agave.jpg" alt="Agave">
-            <input type="number" id="agave" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Pomme de terre</p>
-            <img src="CSS/img/pdt.jpg" alt="Pomme de terre">
-            <input type="number" id="pdt" min="0" value="0" data-prix="6" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Oeuf</p>
-            <img src="CSS/img/oeuf.jpg" alt="Oeuf">
-            <input type="number" id="oeuf" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Poivron</p>
-            <img src="CSS/img/poivron.jpg" alt="poivron">
-            <input type="number" id="poivron" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-          <div class="image-item">
-            <p>Champignon</p>
-            <img src="CSS/img/champignon.jpg" alt="poivron">
-            <input type="number" id="champignon" min="0" value="0" data-prix="7" oninput="calculerTotal()">
-          </div>
-
-        </div>
-      </div>
-
-      <div style="text-align: center; background-color: #e8e1d4f0; border-radius: 10px; width: 60%; margin: 0 auto;">
-        <h3>Total des produits commandés : <span id="total">0</span></h3>
-        <form id="formulaire-commande">
-          <p>Attention pour suivre votre commande en direct, vous devrez rejoindre le <a href="https://discord.gg/sYFTY3sSnt" target="_blank">serveur Discord officiel de la Ferme O'Neil</a>
-            <span class="tooltip">
-              <span class="info-icon">i</span>
-              <span class="tooltip-text">Nous recevrons tout de même votre commande, même si vous n'êtes pas membre du Discord. En revanche, vous n'aurez pas accès au suivi en direct.</span>
-            </span>
-          </p>
-          <div id="infos">
-            <input type="number" id="discord" placeholder="Id Discord" required>
-            <input type="text" id="nom" placeholder="Prénom & Nom / Entreprise" required>
-            <input type="text" id="tel" placeholder="Numéro de téléphone" required>
-          </div>
-          <button type="button" id="btn-commander" class="btn-commande">Passer la commande</button>
-          <div id="message-resultat"></div>
-        </form>
-      </div>
-
-
-      <div class="special">
-        <h2><u>Produit Spécial</u></h2>
-        <div>
-          <p>Fertilisant</p>
-          <img src="CSS/img/fertilizer.jpg" alt="Fertilisant">
-          <input type="number" id="fertilisant" min="0" value="0" data-prix="250" oninput="calculerTotal()">
-          <p id="fertilisant">Quand il s'agit de faire pousser ce qui doit rester discret, notre fertilisant fait des miracles. Vos plantes n'ont jamais été aussi prêtes à grandir… et à disparaître dans l'ombre.  </p>
-        </div>
-      </div>
-    </main>   
-  </body>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adieu à la Ferme</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1582456572066-c7aa8d9457c4') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      text-align: center;
+      padding: 5vh 10vw;
+      backdrop-filter: blur(4px);
+    }
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 2rem;
+      border-radius: 1rem;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.3rem;
+      line-height: 1.8;
+    }
+    .signature {
+      margin-top: 2rem;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Adieu à la Ferme O'Neil</h1>
+    <p>
+      Merci à tous ceux qui ont partagé cette aventure avec nous.<br>
+      Des champs labourés aux barbecues improvisés, chaque instant a été un souvenir inoubliable.<br>
+      C'était plus qu'une ferme, c'était un foyer, un lieu de partage et de rires.
+    </p>
+    <p>
+      Que la route vous mène vers de nouveaux horizons tout aussi enrichissants.<br>
+      Et qui sait... peut-être qu'un jour, on se recroisera autour d'un feu de camp.
+    </p>
+    <div class="signature">
+      — Toute l'équipe de la Ferme O'Neil
+    </div>
+  </div>
+</body>
 </html>
